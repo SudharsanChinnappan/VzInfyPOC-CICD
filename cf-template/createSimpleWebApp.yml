@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CloudFormation template to create ASG Stack
+Parameters:
+  NetworkStackName:
+    Type: String
+    Description: Enter the NetworkStack Name
+    Default: VzInfyPOC-Network
+  ApplicationName:
+    Type: String
+    Description: Enter the Application Name
+    Default: VzInfyPOC
+  InstanceType:
+    Type: String
+    Description: Choose the EC2 Instance Type for your Application
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+  Environment:
+    Type: String
+    Description: Enter the Application Environment
+    Default: DEV
+    AllowedValues:
+      - DEV
+      - TEST
+      - PROD
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: The KeyName for logging into the EC2 Instance
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMALINX: ami-0da2e2af2a8b2f413 
+ 
+
+Resources:
+  
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: "true"
+      KeyName: !Ref KeyName
+      LaunchConfigurationName: LaunchConfiguration
+      ImageId:  
+        Fn::FindInMap:
+          - RegionMap
+          - !Ref "AWS::Region"
+          - "AMALINX"
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${NetworkStackName}-APPLICATIONSECURITYGROUP"
+        - !Ref LoadBalancerSecurityGroup
+      InstanceType: !Ref InstanceType
+      UserData:
+        Fn::Base64: !Sub |
+          #!bin/bash
+          service sshd restart
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: AutoScalingGroup
+      DesiredCapacity: 1
+      MinSize:  "1"
+      MaxSize:  "2"
+      LaunchConfigurationName: !Ref LaunchConfiguration
+      TargetGroupARNs:
+        - !Ref TargetGroup
+      MetricsCollection: 
+        - Granularity: "1Minute"
+          Metrics: 
+            - "GroupMinSize"
+            - "GroupMaxSize"
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET1"
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET2" 
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+          PropagateAtLaunch: "true"
+        - Key: ApplicationName
+          Value: !Ref ApplicationName
+          PropagateAtLaunch: "true"
+        - Key: Name
+          Value: !Ref ApplicationName
+          PropagateAtLaunch: "true"
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allows HTTP Connection
+      GroupName: LoadBalancerSecurityGroup
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+      VpcId:
+        Fn::ImportValue: !Sub "${NetworkStackName}-VPCID"
+      Tags:
+        - Key: Name
+          Value: 
+            Fn::Join:
+              - "-"
+              - - !Ref ApplicationName
+                - "LoadBalancerSecurityGroup"
+  
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: LoadBalancer
+      Scheme: internet-facing
+      Subnets:
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET1"
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET2"
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: 50
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Tags:
+        - Key: Name
+          Value:
+            Fn::Join:
+              - "-"
+              - - !Ref ApplicationName
+                - "LoadBalancer"
+
+  HTTP80Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: "forward"
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+  AppServerListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: "forward"
+          TargetGroupArn: !Ref TargetGroup
+      Conditions:
+        - Field: "path-pattern"
+          Values: ["*"]
+      ListenerArn: !Ref HTTP80Listener
+      Priority: 1 
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: EC2TargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      TargetType: instance
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Fn::ImportValue: !Sub "${NetworkStackName}-VPCID"
+      Tags:
+        - Key: Name
+          Value: TargetGroup
+        - Key: Port
+          Value: 80
+
+
+Outputs:
+  LoadBalancerDns:
+    Description: VzInfyPOC LoadBalancerDns
+    Value:
+      Fn::GetAtt:
+        - LoadBalancer
+        - DNSName
+
+
+
+
+ 

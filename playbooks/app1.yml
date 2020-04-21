@@ -1,0 +1,21 @@
+---
+- name:  Install Tomcat
+  hosts: kubernetes-master-nodes
+  gather_facts: false
+  become: yes
+  tasks:
+  - name: copy
+    copy:
+     src: /etc/ansible/kubernetes-ansible/centos/httpd-basic-deployment.yml
+     dest: /home/ansadmin/
+     mode: '0777'
+  - name: copy
+    copy:
+     src: /etc/ansible/kubernetes-ansible/centos/httpd-basic-service.yml
+     dest: /home/ansadmin/
+     mode: '0777'
+  - name: Retrieve kubectl config file from the master server.
+    command: kubectl create -f /home/ansadmin/httpd-basic-service.yml
+  - name: Retrieve kubectl config file from the master server deployment.
+    command: kubectl create -f /home/ansadmin/httpd-basic-deployment.yml
+
