@@ -1,5 +1,10 @@
 ---
-- hosts: kubernetes-master-nodes
+- hosts: localhost
+  tasks:
+  - shell: echo "{{ groups['master'] }}"
+    register: ad_addr
+  - debug: msg="{{ ad_addr.stdout }}"
+- hosts: kubernetes-master
   become: yes
   vars_files:
   - env_variables

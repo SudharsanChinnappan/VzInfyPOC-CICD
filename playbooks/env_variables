@@ -1,5 +1,3 @@
-#Enter the IP Address of the Kubernetes Master node to the ad_addr variable.
-ad_addr: 10.128.0.32
 cidr_v: 172.16.0.0/16
 
 packages:
