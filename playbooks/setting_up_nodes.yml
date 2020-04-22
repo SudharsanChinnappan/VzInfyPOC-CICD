@@ -25,7 +25,6 @@
   - name: Installing Docker and firewalld
     shell: |
      yum install firewalld -y
-     yum install -y yum-utils device-mapper-persistent-data lvm2
      yum install docker -y
 
   - name: Installing required packages
