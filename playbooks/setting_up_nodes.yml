@@ -24,7 +24,6 @@
 
   - name: Installing Docker and firewalld
     shell: |
-     yum install firewalld -y
      yum install docker -y
 
   - name: Installing required packages
