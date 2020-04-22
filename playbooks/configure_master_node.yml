@@ -16,7 +16,7 @@
     shell: kubeadm reset -f
     register: output
   - name: catch the master address
-    ad_addr: hostvars['localhost']['ad_addr']
+    ad_addr: hostvars['localhost']['ad_addr']['stdout_liness']
   - name: Initializing Kubernetes cluster
     shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}}
     register: output
