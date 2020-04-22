@@ -12,7 +12,10 @@
   - name: Resetting kubeadm
     shell: kubeadm reset -f
     register: output
-
+  - name: Restarting Kubelet
+    shell: systemctl start kubelet.service
+  - name: Restarting Docker
+    shell: systemctl start docker.service
   - name: Initializing Kubernetes cluster
     shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
     register: output
