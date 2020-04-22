@@ -1,9 +1,4 @@
 ---
-- hosts: localhost
-  tasks:
-  - shell: echo "{{ groups['kubernetes-master'] }}"
-    register: ad_addr
-  - debug: msg="{{ ad_addr.stdout }}"
 - hosts: kubernetes-master
   become: yes
   vars_files:
@@ -15,10 +10,9 @@
   - name: Resetting kubeadm
     shell: kubeadm reset -f
     register: output
-  - name: catch the master address
-    ad_addr: hostvars['localhost'][0]['ad_addr']['stdout_lines']
+
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}}
+    shell: kubeadm init --apiserver-advertise-address --pod-network-cidr={{cidr_v}}
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
