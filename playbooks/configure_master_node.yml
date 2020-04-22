@@ -6,14 +6,6 @@
   vars_files:
   - env_variables
   tasks:
-  - name: Copy file with owner and permissions
-    copy:
-      src: /home/jenkins/workspace/VzInfyPOC-SimpleWebAppBuild/scripts/install_kubeadm.sh
-      dest: /home/jenkins/install_kubeadm.sh
-
-  - name: Executing the script to install kubeadm
-    shell: bash /home/jenkins/install_kubeadm.sh
-
   - name: Initializing Kubernetes cluster
     shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --ignore-preflight-errors=NumCPU
     register: output
