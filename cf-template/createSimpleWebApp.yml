@@ -173,7 +173,6 @@ Resources:
         - Key: Port
           Value: 80
 
-
 Outputs:
   LoadBalancerDns:
     Description: VzInfyPOC LoadBalancerDns
