@@ -13,7 +13,7 @@
     shell: kubeadm reset -f
     register: output
   - name: Restarting Kubelet
-    shell: systemctl start kubelet.service
+    shell: systemctl restart kubelet
   - name: Restarting Docker
     shell: systemctl start docker.service
   - name: Initializing Kubernetes cluster
