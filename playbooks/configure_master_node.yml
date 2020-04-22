@@ -1,7 +1,7 @@
 ---
 - hosts: localhost
   tasks:
-  - shell: echo "{{ groups['master'] }}"
+  - shell: echo "{{ groups['kubernetes-master'] }}"
     register: ad_addr
 
 - hosts: kubernetes-master
