@@ -1,4 +1,9 @@
 ---
+- hosts: localhost
+  tasks:
+  - shell: echo "{{ groups['master'] }}"
+    register: ad_addr
+
 - hosts: kubernetes-master
   become: yes
   vars_files:
@@ -12,7 +17,7 @@
     register: output
 
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address 3.228.220.254 --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
+    shell: kubeadm init --apiserver-advertise-address {{ hostvars['localhost'].ad_addr.stdout }} --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
