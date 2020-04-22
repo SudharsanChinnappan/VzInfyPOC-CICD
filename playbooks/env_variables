@@ -1,4 +1,4 @@
-cidr_v: 172.16.0.0/16
+cidr_v: 10.10.10.0/24
 
 packages:
 - kubeadm
