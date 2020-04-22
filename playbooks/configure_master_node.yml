@@ -12,7 +12,7 @@
     register: output
 
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address 3.228.220.254 --pod-network-cidr={{cidr_v}}
+    shell: kubeadm init --apiserver-advertise-address 3.228.220.254 --pod-network-cidr={{cidr_v}} --ignore-preflight-erros=NumCPU
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
