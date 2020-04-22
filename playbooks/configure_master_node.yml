@@ -17,7 +17,7 @@
   - name: Restarting Docker
     shell: systemctl start docker.service
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
+    shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --ignore-preflight-errors=NumCPU
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
@@ -30,4 +30,4 @@
      sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
   - name: Install Network Add-on
-    command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
