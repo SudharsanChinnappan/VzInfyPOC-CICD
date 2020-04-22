@@ -9,6 +9,8 @@
   vars_files:
   - env_variables
   tasks:
+  - debug:
+    ad_addr: hostvars['localhost']['ad_addr']['stdout_lines']
   - name: Pulling images required for setting up a Kubernetes cluster
     shell: kubeadm config images pull
 
