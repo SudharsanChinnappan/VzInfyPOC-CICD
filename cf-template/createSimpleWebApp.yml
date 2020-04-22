@@ -32,7 +32,7 @@ Parameters:
 Mappings:
   RegionMap:
     us-east-1:
-      AMALINX: ami-0da2e2af2a8b2f413 
+      AMALINX: ami-052646c50848108d6 
  
 
 Resources:
@@ -50,7 +50,7 @@ Resources:
           - "AMALINX"
       SecurityGroups:
         - Fn::ImportValue: !Sub "${NetworkStackName}-APPLICATIONSECURITYGROUP"
-        - !Ref LoadBalancerSecurityGroup
+        - !Ref MyLoadBalancerSecurityGroup
       InstanceType: !Ref InstanceType
       UserData:
         Fn::Base64: !Sub |
@@ -87,11 +87,11 @@ Resources:
           Value: !Ref ApplicationName
           PropagateAtLaunch: "true"
 
-  LoadBalancerSecurityGroup:
+  MyLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allows HTTP Connection
-      GroupName: LoadBalancerSecurityGroup
+      GroupName: MyLoadBalancerSecurityGroup
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: tcp
@@ -105,7 +105,7 @@ Resources:
             Fn::Join:
               - "-"
               - - !Ref ApplicationName
-                - "LoadBalancerSecurityGroup"
+                - "MyLoadBalancerSecurityGroup"
   
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -119,7 +119,7 @@ Resources:
         - Key: idle_timeout.timeout_seconds
           Value: 50
       SecurityGroups:
-        - !Ref LoadBalancerSecurityGroup
+        - !Ref MyLoadBalancerSecurityGroup
       Tags:
         - Key: Name
           Value:
