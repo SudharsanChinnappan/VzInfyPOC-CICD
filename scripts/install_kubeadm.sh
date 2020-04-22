@@ -13,7 +13,7 @@ EOF
 setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
-yum install -y docker kubelet kubeadm kubectl kubernetes-cni --disableexcludes=kubernetes
+yum install -y docker firewalld kubelet kubeadm kubectl kubernetes-cni --disableexcludes=kubernetes
 
 systemctl enable --now kubelet
 service docker start
