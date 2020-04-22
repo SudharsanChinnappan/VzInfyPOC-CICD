@@ -6,6 +6,9 @@
   vars_files:
   - env_variables
   tasks:
+  - name: Resetting kubeadm
+    shell: kubeadm reset -f
+    register: output
   - name: Initializing Kubernetes cluster
     shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --ignore-preflight-errors=NumCPU
     register: output
