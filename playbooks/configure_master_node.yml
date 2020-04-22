@@ -1,12 +1,8 @@
 ---
-- hosts: localhost
-  tasks:
-  - shell: echo "{{ groups['kubernetes-master'] }}"
-    register: ad_addr
-
 - hosts: kubernetes-master
   become: yes
   vars_files:
+  - ad_addr: "{{ groups['kubernetes-master'][0] }}"
   - env_variables
   tasks:
   - name: Pulling images required for setting up a Kubernetes cluster
@@ -17,7 +13,7 @@
     register: output
 
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address {{ hostvars['localhost'].ad_addr.stdout }} --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
+    shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}} --ignore-preflight-errors=NumCPU
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
