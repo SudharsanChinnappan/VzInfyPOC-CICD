@@ -61,9 +61,9 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       AutoScalingGroupName: AutoScalingGroup
-      DesiredCapacity: 1
-      MinSize:  "1"
-      MaxSize:  "2"
+      DesiredCapacity: 2
+      MinSize:  "2"
+      MaxSize:  "3"
       LaunchConfigurationName: !Ref LaunchConfiguration
       TargetGroupARNs:
         - !Ref TargetGroup
