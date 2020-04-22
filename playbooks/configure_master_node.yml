@@ -1,8 +1,9 @@
 ---
 - hosts: kubernetes-master
   become: yes
-  vars_files:
+  vars:
   - ad_addr: "{{ groups['kubernetes-master'][0] }}"
+  vars_files:
   - env_variables
   tasks:
   - name: Pulling images required for setting up a Kubernetes cluster
