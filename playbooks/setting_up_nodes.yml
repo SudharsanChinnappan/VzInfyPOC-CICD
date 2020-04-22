@@ -4,6 +4,9 @@
   vars_files:
   - env_variables
   tasks:
+  - name: Disable swap
+    shell: swapoff -a
+    shell: sed -i '/ swap / s/^/#/' /etc/fstab
   - name: Copy file with owner and permissions
     copy:
       src: /home/jenkins/workspace/VzInfyPOC-SimpleWebAppBuild/scripts/install_kubeadm.sh
