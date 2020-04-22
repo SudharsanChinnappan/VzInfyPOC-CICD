@@ -6,16 +6,9 @@
   vars_files:
   - env_variables
   tasks:
-  - name: Pulling images required for setting up a Kubernetes cluster
-    shell: kubeadm config images pull
+  - name: Executing the script to install kubeadm
+    shell: bash scripts/install_kubeadm.sh
 
-  - name: Resetting kubeadm
-    shell: kubeadm reset -f
-    register: output
-  - name: Restarting Kubelet
-    shell: systemctl restart kubelet
-  - name: Restarting Docker
-    shell: systemctl start docker.service
   - name: Initializing Kubernetes cluster
     shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --ignore-preflight-errors=NumCPU
     register: output
