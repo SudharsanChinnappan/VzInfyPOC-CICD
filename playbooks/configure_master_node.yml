@@ -15,7 +15,7 @@
     register: output
 
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --apiserver-advertise-address {{ad_addr}} --pod-network-cidr={{cidr_v}}
+    shell: kubeadm init --apiserver-advertise-address {{ad_addr.stdout}} --pod-network-cidr={{cidr_v}}
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
