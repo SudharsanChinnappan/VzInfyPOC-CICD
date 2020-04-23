@@ -32,16 +32,16 @@
 
   - name: Installing packages 
     yum:
-      name: {{ item }}
+      name: "{{item}}"
       state: latest
-    with_items: "{{ packages }}"
+    with_items: "{{packages}}"
 
   - name: Starting and Enabling the required services
     service:
-     name: "{{ item }}"
+     name: "{{item}}"
      state: started
      enabled: yes
-    with_items: "{{ services }}"
+    with_items: "{{services}}"
   
 
   
