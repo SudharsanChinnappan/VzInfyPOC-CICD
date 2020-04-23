@@ -2,7 +2,6 @@ packages:
 - docker
 - kubeadm
 - kubectl
-- kubernetes-cni
 
 services:
 - docker

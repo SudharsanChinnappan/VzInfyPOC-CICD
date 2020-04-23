@@ -26,22 +26,28 @@
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
       exclude=kubelet kubeadm kubectl
       EOF
-      # Set SELinux in permissive mode (effectively disabling it)
-      setenforce 0
-      sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+    
+  - name: Set Enforce 0 and selinux permission
+    shell: setenforce 0
+    shell: sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 
   - name: Installing packages 
     yum:
-      name: "{{item}}"
+      name: "{{ item }}"
       state: latest
-    with_items: "{{packages}}"
+    with_items: "{{ packages }}"
 
+  - name: Installing Kubernetes-CNI
+    yum:
+      name: kubernetes-cni
+      state: latest
+      
   - name: Starting and Enabling the required services
     service:
-     name: "{{item}}"
+     name: "{{ item }}"
      state: started
      enabled: yes
-    with_items: "{{services}}"
+    with_items: "{{ services }}"
   
 
   
