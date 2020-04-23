@@ -21,7 +21,7 @@
      sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
      sudo chown $(id -u):$(id -g) $HOME/.kube/config
   - name: get the k8 version for weave-net
-    shell: echo 'kubectl version | base64 | tr -d '\n'
+    shell: echo "kubectl version | base64 | tr -d '\n'""
     register: kversion
   - name: Install Network Add-on Weave-Net
     command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version={{kversion}}"
