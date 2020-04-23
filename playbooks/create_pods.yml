@@ -1,5 +1,6 @@
 ---
 - hosts: kubernetes-master
+  become: yes
   vars_files:
   - app_env_variables
   tasks:
@@ -9,7 +10,7 @@
       dest: /home/jenkins/
 
   - name: Create ReplicationController
-    shell: kubectl create -f /home/jenkins/kubernetes_yaml/rc.yml
+    shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/rc.yml
     
   - name: Create Service
-    shell: kubectl create -f /home/jenkins/kubernetes_yaml/service.yml
+    shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/service.yml
