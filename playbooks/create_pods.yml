@@ -6,7 +6,7 @@
   - name: Copy ReplicationController.yml 
     copy:
       src: /home/jenkins/workspace/VzInfyPOC-SimpleWebAppBuild/kubernetes_yaml
-      dest: /home/jenkins/kubernetes_yaml
+      dest: /home/jenkins/
 
   - name: Create ReplicationController
     shell: kubectl create -f /home/jenkins/kubernetes_yaml/rc.yml
