@@ -12,11 +12,7 @@
     shell: kubectl create secret docker-registry regcred --docker-server={{jfrogrepo}} --docker-username={{jfroguser}} --docker-password={{jfrogpass}} --docker-email={{jfrogemail}}
   
   - name: Create ReplicationController
-    shell: kubectl create -f rc.yml
-      args:
-        chdir: /home/jenkins/kubernetes_yaml/
+    shell: kubectl create -f /home/jenkins/kubernetes_yaml/rc.yml
 
   - name: Create Service
-    shell: kubectl create -f service.yml
-      args:
-        chdir: /home/jenkins/kubernetes_yaml/
+    shell: kubectl create -f /home/jenkins/kubernetes_yaml/service.yml
