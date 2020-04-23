@@ -5,7 +5,7 @@
   - env_variables
   tasks:
   - name: Copying token to worker nodes
-    copy: src=/etc/ansible/kubernetes-ansible/{{ token_file }} dest=/home/jenkins/join_token
+    copy: src=/home/jenkins/kubernetes-ansible/{{ token_file }} dest=/home/jenkins/join_token
 
   - name: Joining worker nodes with kubernetes master
     shell: |
