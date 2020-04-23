@@ -10,7 +10,7 @@
       dest: /home/jenkins/
 
   - name: Create ReplicationController
-    shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/rc.yml
+    shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/deployment.yml
     
   - name: Create Service
     shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/service.yml
