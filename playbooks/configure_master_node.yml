@@ -13,7 +13,7 @@
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
-    local_action: copy content={{ output.stdout }} dest=/home/jenkins/kubernetes-ansible/{{ token_file }}
+    local_action: copy content={{ output.stdout }} dest=/home/jenkins/{{ token_file }}
 
   - name: Copying required files
     shell: |
