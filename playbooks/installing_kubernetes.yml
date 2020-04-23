@@ -19,12 +19,12 @@
      block: |
       [kubernetes]
       name=Kubernetes
-      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
       enabled=1
       gpgcheck=1
       repo_gpgcheck=1
-      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-      exclude=kubelet kubeadm kubectl
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
     
   - name: Set Enforce 0 and selinux permission
     shell: setenforce 0
@@ -33,13 +33,13 @@
   - name: Installing packages 
     yum:
       name: "{{ item }}"
-      state: latest
+      state: present
     with_items: "{{ packages }}"
 
   - name: Installing Kubernetes-CNI
     yum:
       name: kubernetes-cni
-      state: latest
+      state: present
 
   - name: Starting and Enabling the required services
     service:
