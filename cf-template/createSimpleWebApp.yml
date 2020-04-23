@@ -9,7 +9,15 @@ Parameters:
     Type: String
     Description: Enter the Application Name
     Default: VzInfyPOC
-  InstanceType:
+  MasterInstanceType:
+    Type: String
+    Description: Choose the EC2 Instance Type for your Application
+    Default: t2.medium
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+  WorkerInstanceType:
     Type: String
     Description: Choose the EC2 Instance Type for your Application
     Default: t2.micro
@@ -37,12 +45,12 @@ Mappings:
 
 Resources:
   
-  LaunchConfiguration:
+  MasterLaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       AssociatePublicIpAddress: "true"
       KeyName: !Ref KeyName
-      LaunchConfigurationName: LaunchConfiguration
+      LaunchConfigurationName: MasterLaunchConfiguration
       ImageId:  
         Fn::FindInMap:
           - RegionMap
@@ -50,23 +58,23 @@ Resources:
           - "AMALINX"
       SecurityGroups:
         - Fn::ImportValue: !Sub "${NetworkStackName}-APPLICATIONSECURITYGROUP"
-        - !Ref MyLoadBalancerSecurityGroup
-      InstanceType: !Ref InstanceType
+        - !Ref WorkerLoadBalancerSecurityGroup
+      InstanceType: !Ref MasterInstanceType
       UserData:
         Fn::Base64: !Sub |
           #!bin/bash
           service sshd restart
 
-  AutoScalingGroup:
+  MasterAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       AutoScalingGroupName: AutoScalingGroup
-      DesiredCapacity: 2
-      MinSize:  "2"
-      MaxSize:  "3"
-      LaunchConfigurationName: !Ref LaunchConfiguration
+      DesiredCapacity: 1
+      MinSize:  "1"
+      MaxSize:  "1"
+      LaunchConfigurationName: !Ref MasterLaunchConfiguration
       TargetGroupARNs:
-        - !Ref TargetGroup
+        - !Ref MasterTargetGroup
       MetricsCollection: 
         - Granularity: "1Minute"
           Metrics: 
@@ -83,15 +91,104 @@ Resources:
         - Key: ApplicationName
           Value: !Ref ApplicationName
           PropagateAtLaunch: "true"
+        - Key: Role
+          Value: Master
+          PropagateAtLaunch: "true"
         - Key: Name
-          Value: !Ref ApplicationName
+          Value:
+            Fn::Join:
+              - "-"
+              - - !Ref ApplicationName
+                - "Master"
           PropagateAtLaunch: "true"
 
-  MyLoadBalancerSecurityGroup:
+  MasterTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: MasterEC2TargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      TargetType: instance
+      UnhealthyThresholdCount: 3
+      VpcId:
+        Fn::ImportValue: !Sub "${NetworkStackName}-VPCID"
+      Tags:
+        - Key: Name
+          Value: MasterTargetGroup
+        - Key: Port
+          Value: 80
+
+  WorkerLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: "true"
+      KeyName: !Ref KeyName
+      LaunchConfigurationName: WorkerLaunchConfiguration
+      ImageId:  
+        Fn::FindInMap:
+          - RegionMap
+          - !Ref "AWS::Region"
+          - "AMALINX"
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${NetworkStackName}-APPLICATIONSECURITYGROUP"
+        - !Ref WorkerLoadBalancerSecurityGroup
+      InstanceType: !Ref WorkerInstanceType
+      UserData:
+        Fn::Base64: !Sub |
+          #!bin/bash
+          service sshd restart
+
+  WorkerAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: WorkerAutoScalingGroup
+      DesiredCapacity: 2
+      MinSize:  "2"
+      MaxSize:  "3"
+      LaunchConfigurationName: !Ref WorkerLaunchConfiguration
+      TargetGroupARNs:
+        - !Ref WorkerTargetGroup
+      MetricsCollection: 
+        - Granularity: "1Minute"
+          Metrics: 
+            - "GroupMinSize"
+            - "GroupMaxSize"
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET1"
+        - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET2" 
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+          PropagateAtLaunch: "true"
+        - Key: ApplicationName
+          Value: !Ref ApplicationName
+          PropagateAtLaunch: "true"
+        - Key: Role
+          Value: Worker
+          PropagateAtLaunch: "true"
+        - Key: Name
+          Value:
+            Fn::Join:
+              - "-"
+              - - !Ref ApplicationName
+                - "Worker"
+          PropagateAtLaunch: "true"
+           
+  WorkerLoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allows HTTP Connection
-      GroupName: MyLoadBalancerSecurityGroup
+      GroupName: WorkerLoadBalancerSecurityGroup
       SecurityGroupIngress:
         - CidrIp: 0.0.0.0/0
           IpProtocol: tcp
@@ -105,12 +202,12 @@ Resources:
             Fn::Join:
               - "-"
               - - !Ref ApplicationName
-                - "MyLoadBalancerSecurityGroup"
+                - "WorkerLoadBalancerSecurityGroup"
   
-  LoadBalancer:
+  WorkerLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: LoadBalancer
+      Name: WorkerLoadBalancer
       Scheme: internet-facing
       Subnets:
         - Fn::ImportValue: !Sub "${NetworkStackName}-PUBLICSUBNET1"
@@ -119,36 +216,36 @@ Resources:
         - Key: idle_timeout.timeout_seconds
           Value: 50
       SecurityGroups:
-        - !Ref MyLoadBalancerSecurityGroup
+        - !Ref WorkerLoadBalancerSecurityGroup
       Tags:
         - Key: Name
           Value:
             Fn::Join:
               - "-"
               - - !Ref ApplicationName
-                - "LoadBalancer"
+                - "WorkerLoadBalancer"
 
-  HTTP80Listener:
+  WorkerHTTP80Listener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
         - Type: "forward"
-          TargetGroupArn: !Ref TargetGroup
-      LoadBalancerArn: !Ref LoadBalancer
+          TargetGroupArn: !Ref WorkerTargetGroup
+      LoadBalancerArn: !Ref WorkerLoadBalancer
       Port: 80
       Protocol: HTTP
-  AppServerListenerRule:
+  WorkerAppServerListenerRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
       Actions:
         - Type: "forward"
-          TargetGroupArn: !Ref TargetGroup
+          TargetGroupArn: !Ref WorkerTargetGroup
       Conditions:
         - Field: "path-pattern"
           Values: ["*"]
-      ListenerArn: !Ref HTTP80Listener
+      ListenerArn: !Ref WorkerHTTP80Listener
       Priority: 1 
-  TargetGroup:
+  WorkerTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 30
@@ -157,7 +254,7 @@ Resources:
       HealthyThresholdCount: 5
       Matcher:
         HttpCode: '200'
-      Name: EC2TargetGroup
+      Name: WorkerEC2TargetGroup
       Port: 80
       Protocol: HTTP
       TargetGroupAttributes:
@@ -169,16 +266,16 @@ Resources:
         Fn::ImportValue: !Sub "${NetworkStackName}-VPCID"
       Tags:
         - Key: Name
-          Value: TargetGroup
+          Value: WorkerTargetGroup
         - Key: Port
           Value: 80
 
 Outputs:
-  LoadBalancerDns:
-    Description: VzInfyPOC LoadBalancerDns
+  WorkerLoadBalancerDns:
+    Description: VzInfyPOC WorkerLoadBalancerDns
     Value:
       Fn::GetAtt:
-        - LoadBalancer
+        - WorkerLoadBalancer
         - DNSName
 
 

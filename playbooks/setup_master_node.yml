@@ -1,3 +1,0 @@
----
-- import_playbook: setting_up_nodes.yml
-- import_playbook: configure_master_node.yml

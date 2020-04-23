@@ -1,8 +1,0 @@
----
-- name:  Install Tomcat
-  hosts: kubernetes-master-nodes
-  gather_facts: false
-  become: yes
-  tasks:
-  - name: Retrieve kubectl config file from the master server.
-    shell: kubectl create -f httpd-basic-deployment.yml

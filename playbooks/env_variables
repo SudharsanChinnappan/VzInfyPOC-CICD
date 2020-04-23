@@ -1,16 +1,11 @@
-cidr_v: 10.244.0.0/16
-
 packages:
+- docker
 - kubeadm
 - kubectl
+- kubernetes-cni
 
 services:
 - docker
 - kubelet
-- firewalld
-
-ports:
-- "6443/tcp"
-- "10250/tcp"
 
 token_file: join_token
