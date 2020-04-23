@@ -255,7 +255,7 @@ Resources:
       Matcher:
         HttpCode: '200'
       Name: WorkerEC2TargetGroup
-      Port: 80
+      Port: 30007
       Protocol: HTTP
       TargetGroupAttributes:
       - Key: deregistration_delay.timeout_seconds
@@ -268,7 +268,7 @@ Resources:
         - Key: Name
           Value: WorkerTargetGroup
         - Key: Port
-          Value: 80
+          Value: 30007
 
 Outputs:
   WorkerLoadBalancerDns:
