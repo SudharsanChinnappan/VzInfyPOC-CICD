@@ -1,0 +1,9 @@
+wget 'https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz'
+tar -xvf helm-v3.2.0-linux-amd64.tar.gz
+rm helm-v3.2.0-linux-amd64.tar.gz
+cp linux-amd64/helm /bin/
+
+https://github.com/SudharsanChinnappan/VzInfyPOC-CICD-V2.git
+
+docker login -u admin -p jfrog@2020 sudharsanc-simplewebappdocker.jfrog.io
+kubectl create secret docker-registry regcred --docker-server=sudharsanc-simplewebappdocker.jfrog.io --docker-username=admin --docker-password=jfrog@2020 --docker-email=chinnappan.sudharsan@gmail.com --namespace simplewebapp-namespace
