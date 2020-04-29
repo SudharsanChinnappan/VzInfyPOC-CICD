@@ -2,6 +2,9 @@ node('AnsibleMasterv1') {
 
     appname = 'simplewebapp'
     artifactory_repo = 'sudharsanc-simplewebappdocker.jfrog.io'
+    chart_version = '0.1.0'
+    app_version = '0.0.1'
+
 
     stage('Git Code Checkout'){
         git credentialsId: 'GitHub', url: 'https://github.com/SudharsanChinnappan/VzInfyPOC-CICD.git'
