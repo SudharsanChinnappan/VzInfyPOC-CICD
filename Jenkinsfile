@@ -25,7 +25,7 @@ node('AnsibleMasterv1') {
             sh "helm package charts/simplewebapp-chart"
             sh "curl -uadmin:AP6we4X4QBTAVLsE4QNexyc6eFK -T simplewebapp-chart-0.1.0.tgz 'https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm/simplewebapp-chart-0.1.0.tgz'"
             sh "helm repo update"
-            sh "echo 'chart_name: simplewebapp-chart-0.1.0' > playbooks/helm_variables"
+
     }
     stage('Create AWS EC2 Instances for K8 Cluster'){
             withCredentials([usernamePassword(credentialsId: 'awskey', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
