@@ -28,7 +28,7 @@ node('AnsibleMasterv1') {
         sh "ansible-playbook -i inventory playbooks/installing_kubernetes.yml"
         sh "ansible-playbook -i inventory playbooks/configure_master_node.yml"
         sh "ansible-playbook -i inventory playbooks/configure_worker_nodes.yml"
-        sh "ansible-playbook -i inventory playbooks/create_pods.yml"
+    //    sh "ansible-playbook -i inventory playbooks/create_pods.yml"
         }         
     }
        

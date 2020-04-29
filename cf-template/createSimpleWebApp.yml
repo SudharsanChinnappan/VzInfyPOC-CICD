@@ -151,9 +151,9 @@ Resources:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
       AutoScalingGroupName: WorkerAutoScalingGroup
-      DesiredCapacity: 2
-      MinSize:  "2"
-      MaxSize:  "3"
+      DesiredCapacity: 1
+      MinSize:  "1"
+      MaxSize:  "2"
       LaunchConfigurationName: !Ref WorkerLaunchConfiguration
       TargetGroupARNs:
         - !Ref WorkerTargetGroup

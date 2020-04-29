@@ -4,14 +4,15 @@
   vars_files:
   - app_env_variables
   tasks:
-  - name: Copy ReplicationController.yml 
+  - name: Copy kubernetes yaml files
     copy:
       src: /home/jenkins/workspace/VzInfyPOC-SimpleWebAppBuild/kubernetes_yaml
       dest: /home/jenkins/
 
   - name: Create a secret 
     shell: sudo kubectl create secret docker-registry regcred --docker-server={{jfrogrepo}} --docker-username={{jfroguser}} --docker-password={{jfrogpass}} --docker-email={{jfrogemail}}
-  - name: Create ReplicationController
+ 
+  - name: Create Deployment
     shell: sudo kubectl create -f /home/jenkins/kubernetes_yaml/deployment.yml
     
   - name: Create Service
