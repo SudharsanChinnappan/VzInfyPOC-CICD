@@ -2,7 +2,7 @@
 - hosts: kubernetes-master
   become: yes
   vars_files:
-  - helm_variables
+  - app_env_variables
   tasks:
 
   - name: Add Helm Repo
@@ -11,6 +11,9 @@
   - name: Update Helm Repo
     shell: helm repo update
   
+  - name: Create Secret 
+    shell: sudo kubectl create secret docker-registry regcred --docker-server={{jfrogrepo}} --docker-username={{jfroguser}} --docker-password={{jfrogpass}} --docker-email={{jfrogemail}}
+    
   - name: Install Helm Chart
     shell: helm install helm/simplewebapp-chart --generate-name
   
