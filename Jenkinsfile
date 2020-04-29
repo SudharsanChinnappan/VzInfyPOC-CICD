@@ -2,8 +2,6 @@ node('AnsibleMasterv1') {
 
     appname = 'simplewebapp'
     artifactory_repo = 'sudharsanc-simplewebappdocker.jfrog.io'
-    chart_version = '0.1.0'
-    app_version = '0.0.1'
 
 
     stage('Git Code Checkout'){
@@ -24,10 +22,10 @@ node('AnsibleMasterv1') {
         stage('Helm Repo add and Helm Packaging'){
             
             sh "helm repo add helm https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm --username admin --password AP6we4X4QBTAVLsE4QNexyc6eFK"
-            sh "helm package charts/simplewebapp-chart --version {{ chart_version }} --app-version {{ app_version }}"
-            sh "curl -uadmin:AP6we4X4QBTAVLsE4QNexyc6eFK -T simplewebapp-chart-{{ chart_version }}.tgz 'https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm/simplewebapp-chart-{{ chart_version }}.tgz'"
+            sh "helm package charts/simplewebapp-chart"
+            sh "curl -uadmin:AP6we4X4QBTAVLsE4QNexyc6eFK -T simplewebapp-chart-0.1.0.tgz 'https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm/simplewebapp-chart-{{ chart_version }}.tgz'"
             sh "helm repo update"
-            sh "echo chart_name: {{ simplewebapp-chart-{{ chart_version }} }} > playbooks/helm_variables"
+            sh "echo 'chart_name: simplewebapp-chart-0.1.0' > playbooks/helm_variables"
     }
     stage('Create AWS EC2 Instances for K8 Cluster'){
             withCredentials([usernamePassword(credentialsId: 'awskey', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
