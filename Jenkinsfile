@@ -46,7 +46,7 @@ node('AnsibleMasterv1') {
             sh "ansible-playbook -i inventory playbooks/configure_master_node.yml"
             sh "ansible-playbook -i inventory playbooks/configure_worker_nodes.yml"
         //  sh "ansible-playbook -i inventory playbooks/create_pods.yml"
-            sh "ansible-playbook -i inventory playbooks/install_helm_chart.yml"
+            sh "ansible-playbook -i inventory playbooks/configure_helm.yml"
     }
        
 }
