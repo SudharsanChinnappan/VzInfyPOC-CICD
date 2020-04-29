@@ -12,7 +12,7 @@
     shell: helm repo update
   
   - name: Install Helm Chart
-    shell: helm install helm/{{ chart_name }}
+    shell: helm install helm/simplewebapp-chart.0.1.0
   
 
 
