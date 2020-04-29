@@ -20,8 +20,19 @@
      mkdir -p $HOME/.kube
      sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
      sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
   - name: get the k8 version for weave-net
     shell: kubectl version | base64 | tr -d '\n'
     register: kversion
+
   - name: Install Network Add-on Weave-Net
     command: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version={{kversion.stdout}}"
+    
+  - name: Installing Helm in Kubernetes Master
+    shell: |
+      wget  ‘https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz’
+      tar -xvf helm-v3.2.0-linux-amd64.tar.gz
+      rm helm-v3.2.0-linux-amd64.tar.gz
+      sudo cp linux-amd64/helm /bin/
+      rm -rf linux-amd64
+

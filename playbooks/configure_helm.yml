@@ -1,0 +1,20 @@
+---
+- hosts: kubernetes-master
+  become: yes
+  vars_files:
+  - helm_variables
+  tasks:
+
+  - name: Add Helm Repo
+    shell: helm repo add helm https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm --username admin --password AP6we4X4QBTAVLsE4QNexyc6eFK
+
+  - name: Update Helm Repo
+    shell: helm repo update
+  
+  - name: Install Helm Chart
+    shell: helm install helm/{{ chart_name }}
+  
+
+
+
+    
