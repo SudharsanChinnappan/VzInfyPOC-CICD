@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "simplewebapp-chart.fullname" . }}-deployment
+  labels:
+    app: {{ template "simplewebapp-chart.fullname" .}}-{{ .Values.application.name }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "simplewebapp-chart.fullname" .}}-{{ .Values.application.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "simplewebapp-chart.fullname" .}}-{{ .Values.application.name }}
+    spec:
+      containers:
+      - name: {{ .Values.application.name }}
+        image: {{ .Values.image.repo }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
+        ports:
+        - containerPort: {{ .Values.image.containerport }}
+      imagePullSecrets:
+      - name: {{ .Values.image.secret }} 
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "simplewebapp-chart.fullname" . }}-service
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ template "simplewebapp-chart.fullname" . }}-{{ .Values.application.name }}
+  ports:
+    - port: {{ .Values.service.port}}
+      targetPort: {{ .Values.service.targetport}}
+      nodePort: {{ .Values.service.nodeport }}

@@ -1,0 +1,18 @@
+application:
+  name: simplewebapp
+
+deployment:
+  replicas: 2
+  
+image:
+  repo: sudharsanc-simplewebappdocker.jfrog.io
+  name: simplewebapp
+  tag: latest
+  containerport: 80
+  secret: regcred
+
+service:
+  type: NodePort
+  port: 80
+  targetport: 80
+  nodeport: 30007
