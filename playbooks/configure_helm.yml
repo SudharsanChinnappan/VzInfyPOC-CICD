@@ -6,7 +6,7 @@
   tasks:
 
   - name: Add Helm Repo
-    shell: helm repo add helm https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm --username admin --password AP6we4X4QBTAVLsE4QNexyc6eFK
+    shell: helm repo add helm https://sudharsanc-simplewebappdocker.jfrog.io/artifactory/helm --username admin --password AP5sHFBRdT4tZ1ui1z1JWi6UbNU
 
   - name: Update Helm Repo
     shell: helm repo update
