@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: simplewebapp
-        image: sudharsanc-simplewebappdocker.jfrog.io/simplewebapp:latest
+        image: csudharsan-docker.jfrog.io/simplewebapp:latest
         ports:
         - containerPort: 80
       imagePullSecrets:
