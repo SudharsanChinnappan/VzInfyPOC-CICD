@@ -5,7 +5,7 @@ deployment:
   replicas: 2
   
 image:
-  repo: sudharsanc-simplewebappdocker.jfrog.io
+  repo: csudharsan-docker.jfrog.io
   name: simplewebapp
   tag: latest
   containerport: 80
