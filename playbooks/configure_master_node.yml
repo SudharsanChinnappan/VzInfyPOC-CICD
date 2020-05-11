@@ -9,7 +9,7 @@
     register: output
 
   - name: Initializing Kubernetes cluster
-    shell: kubeadm init --cloud-provider=aws --ignore-preflight-errors=NumCPU
+    shell: kubeadm init --ignore-preflight-errors=NumCPU
     register: output
 
   - name: Storing Logs and Generated token for future purpose.
